@@ -2,11 +2,13 @@ import com.haxepunk.Entity;
 import com.haxepunk.utils.Input;
 import com.haxepunk.graphics.Image;
 import com.haxepunk.graphics.Graphiclist;
+import com.haxepunk.graphics.Spritemap;
 
 class Button extends Entity {
 
     var magenta = 0xff00ff; 
-    private var graphics:Graphiclist; 
+    private var button:Graphiclist; 
+    private var buttonPressed:Graphiclist; 
     private var size:Int = 50;
     private var clicker:Image;
 
@@ -14,38 +16,49 @@ class Button extends Entity {
 
         super(x, y);
         
-        graphic = createButtonImage(size);
+        createButtonImage();
+		graphic = button;
         this.setHitboxTo(graphic);
         this.type = 'button';
     }
 
     private function clickedButton() {
         var clicked:Bool = false;
-        
-        if (Input.mouseDown &&
-            this.distanceToPoint(Input.mouseX, Input.mouseY, true) == 0) {
-            clicked = true;
+        if (Input.mouseDown) {
+			var mouseDist = this.distanceToPoint(Input.mouseX, Input.mouseY, true);
+			trace(mouseDist);
+			if (mouseDist == 0) {
+			   clicked = true;
+
+		   }
         }
 
         return clicked;
     }
 
-    private function createButtonImage (size) {
-    /*    var background = Image.createCircle(size, 0xCDCDCD);*/
-        //clicker = Image.createCircle(Std.int(size - size / 10), 0xd02a2a);
-        //clicker.originY = 10;
-        //clicker.originX = size / 10;
+    private function createButtonImage () {
+		var background = new Image('graphics/outline.png');
+		this.setHitboxTo(background);
+		var foreground = new Image('graphics/red.png');
+		var backgroundP = new Image('graphics/outline_pressed.png');
+		var foregroundP = new Image('graphics/red_pressed.png');
 
-        //var graphics = new Graphiclist();
-        //graphics.add(background);
-        /*graphics.add(clicker);*/
-        return graphics;
+		button = new Graphiclist();
+		button.add(background);
+		button.add(foreground);
+        
+		buttonPressed = new Graphiclist();
+		buttonPressed.add(backgroundP);
+		buttonPressed.add(backgroundP);
     }
 
     public override function update() {
         super.update();
         if (clickedButton()) {
+			graphic = buttonPressed;
             trace('Hi I\'m being clicked');
-        }
+        } else {
+			graphic = button;
+		}
     }
 }
